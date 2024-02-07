@@ -16,10 +16,11 @@ class Program
     {
         _client = new DiscordSocketClient();
         _client.Log += LogAsync;
+        _client.Ready += ReadyAsync;
         _client.MessageReceived += MessageReceivedAsync;
 
         //Developement only
-        Env.Load();
+        Env.Load(FindFile(".env"));
 
         var token = BotConfiguration.BotToken;
 
@@ -34,7 +35,12 @@ class Program
         {
             Console.WriteLine("Failed to read bot token from envirnment");
         }
+    }
 
+    private Task ReadyAsync()
+    {
+        Console.WriteLine("Bot is connected and ready!");
+        return Task.CompletedTask;
     }
 
     private Task LogAsync(LogMessage log)
@@ -45,9 +51,45 @@ class Program
 
     private async Task MessageReceivedAsync(SocketMessage message)
     {
+        Console.WriteLine($"Message received from {message.Author.Username}: {message.Content}");
+
+        if (message.Author.IsBot)
+        {
+            Console.WriteLine("Message from a bot. Ignoring.");
+            return;
+        }
+
+        Console.WriteLine("Inspecting message properties:");
+        Console.WriteLine($"Author: {message.Author}");
+        Console.WriteLine($"Channel: {message.Channel}");
+        Console.WriteLine($"Content: {message.Content}");
+        Console.WriteLine($"IsTTS: {message.IsTTS}");
+        Console.WriteLine($"MentionedUsers: {string.Join(", ", message.MentionedUsers)}");
+        Console.WriteLine($"MentionedRoles: {string.Join(", ", message.MentionedRoles)}");
+        Console.WriteLine($"Attachments: {string.Join(", ", message.Attachments.Select(a => a.Url))}");
+        Console.WriteLine("Processing message...");
+
         if (message.Content.ToLower() == "hello")
         {
             await message.Channel.SendMessageAsync("Hello, Discord!");
+        }
+    }
+
+    public static string FindFile(string fileName)
+    {
+        var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (true)
+        {
+            var testPath = Path.Combine(directory.FullName, fileName);
+            if (File.Exists(testPath))
+            {
+                return testPath;
+            }
+            if (directory.FullName == directory.Root.FullName)
+            {
+                throw new FileNotFoundException($"I looked for {fileName} in every folder from {Directory.GetCurrentDirectory()} to {directory.Root.FullName} and couldn't find it.");
+            }
+            directory = directory.Parent;
         }
     }
 }
