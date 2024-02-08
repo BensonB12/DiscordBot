@@ -14,7 +14,10 @@ class Program
 
     public async Task RunBotAsync()
     {
-        _client = new DiscordSocketClient();
+        _client = new DiscordSocketClient(new DiscordSocketConfig() { 
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent,
+            LogLevel = LogSeverity.Info,
+        });
         _client.Log += LogAsync;
         _client.Ready += ReadyAsync;
         _client.MessageReceived += MessageReceivedAsync;
@@ -59,15 +62,7 @@ class Program
             return;
         }
 
-        Console.WriteLine("Inspecting message properties:");
         Console.WriteLine($"Author: {message.Author}");
-        Console.WriteLine($"Channel: {message.Channel}");
-        Console.WriteLine($"Content: {message.Content}");
-        Console.WriteLine($"IsTTS: {message.IsTTS}");
-        Console.WriteLine($"MentionedUsers: {string.Join(", ", message.MentionedUsers)}");
-        Console.WriteLine($"MentionedRoles: {string.Join(", ", message.MentionedRoles)}");
-        Console.WriteLine($"Attachments: {string.Join(", ", message.Attachments.Select(a => a.Url))}");
-        Console.WriteLine("Processing message...");
 
         if (message.Content.ToLower() == "hello")
         {
