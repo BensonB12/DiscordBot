@@ -23,7 +23,12 @@ class Program
         _client.Ready += ReadyAsync;
         _client.MessageReceived += MessageReceivedAsync;
 
-        await _client.LoginAsync(TokenType.Bot, "YOUR-TOKEN-HERE");
+
+        Env.Load(FindFile(".env"));
+
+        var token = Environment.GetEnvironmentVariable("TOKEN");
+
+        await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
         await Task.Delay(-1);
     }
