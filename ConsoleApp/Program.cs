@@ -18,6 +18,7 @@ class Program
             GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent,
             LogLevel = LogSeverity.Info,
         });
+
         _client.Log += LogAsync;
         _client.Ready += ReadyAsync;
         _client.MessageReceived += MessageReceivedAsync;
