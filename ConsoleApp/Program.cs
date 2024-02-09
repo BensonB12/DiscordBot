@@ -22,22 +22,9 @@ class Program
         _client.Ready += ReadyAsync;
         _client.MessageReceived += MessageReceivedAsync;
 
-        //Developement only
-        Env.Load(FindFile(".env"));
-
-        var token = BotConfiguration.BotToken;
-
-
-        if (token != null)
-        {
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-            await Task.Delay(-1);
-        }
-        else
-        {
-            Console.WriteLine("Failed to read bot token from envirnment");
-        }
+        await _client.LoginAsync(TokenType.Bot, "YOUR-TOKEN-HERE");
+        await _client.StartAsync();
+        await Task.Delay(-1);
     }
 
     private Task ReadyAsync()
